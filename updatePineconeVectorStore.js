@@ -8,9 +8,7 @@ const updatePineconeVectorStore = async (client, indexName, docs, embeddings) =>
     const queue = [];
 
     try {
-        //const splitDocs = await splitter.splitDocuments(docs);
 
-        // Loop over splitDocs and enqueue each splitDoc into a queue
         for (let doc of docs) {
            const docTextPath = doc.metadata.source;
            const docText = doc.pageContent;
@@ -43,11 +41,10 @@ const updatePineconeVectorStore = async (client, indexName, docs, embeddings) =>
            }
         }
 
-        console.log(queue.length)
-        //upsert vectors in batches of 12 to vector database
-        const batchSize = 12;
+        //upsert vectors in batches of 18 to vector database
+        const batchSize = 18;
         while (queue.length > 0) {
-            const batch = queue.slice(0, batchSize);
+            const batch = queue.splice(0, batchSize);
 
             await index.upsert(batch);
             console.log(`Processed batch of ${batch.length} documents. Remaining queue size: ${queue.length}`);
@@ -57,8 +54,6 @@ const updatePineconeVectorStore = async (client, indexName, docs, embeddings) =>
     }
 };
 
-
-    // Select batch size from these; 1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, and 72
 
 const checkEmbeddingExists = async (index, docID) => {
     try {
